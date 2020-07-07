@@ -9,7 +9,19 @@ module.exports.default = polylabel;
 
 function polylabel(polygon, precision, debug) {
     precision = precision || 1.0;
-
+  
+    // is this a single polygon or a list of them? -- call recursively on lists
+    if (isNaN(polygon[0][0][0])) {
+        var bestpoint = polylabel(polygon[0], precision, debug);
+        for (p = 1; p < polygon.length; p++) {
+          const thispoint = polylabel(polygon[p], precision, debug);
+          if (thispoint.distance > bestpoint.distance) {
+            bestpoint = thispoint;
+          }
+        }
+        return bestpoint;
+    }
+    
     // find the bounding box of the outer ring
     var minX, minY, maxX, maxY;
     for (var i = 0; i < polygon[0].length; i++) {
